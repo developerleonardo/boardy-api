@@ -1,4 +1,4 @@
-from fastapi import FastAPI
+from fastapi import FastAPI, HTTPException
 from pydantic import BaseModel
 
 # Entity user
@@ -23,12 +23,12 @@ async def users():
 async def user(id: int):
     return search_user_by_id(id)
 
-@app.post("/user")
+@app.post("/user", response_model=User ,status_code=201)
 async def create_user(user: User):
     if check_user_exists(user.id):
-        return {"error": "User with this ID already exists"}
+        raise HTTPException(status_code=400, detail="User with this ID already exists")
     if check_user_exists_by_email(user.email):
-        return {"error": "User with this email already exists"}
+        raise HTTPException(status_code=400, detail="User with this email already exists")
     user_list.append(user)
     return user
 
@@ -37,24 +37,24 @@ async def update_user(id: int, updated_user: User):
     for index, user in enumerate(user_list):
         if user.id == id:
             if updated_user.email != user.email and check_user_exists_by_email(updated_user.email):
-                return {"error": "User with this email already exists"}
+                raise HTTPException(status_code=400, detail="User with this email already exists")
             user_list[index] = updated_user
             return updated_user
-    return {"error": "User not found"}
+    raise HTTPException(status_code=404, detail="User not found")
 
 @app.delete("/user/{id}")
 async def delete_user(id: int):
     for index, user in enumerate(user_list):
         if user.id == id:
             del user_list[index]
-            return {"message": "User deleted successfully"}
-    return {"error": "User not found"}
+            raise HTTPException(status_code=200, detail="User deleted successfully")
+    raise HTTPException(status_code=404, detail="User not found")
 
 def search_user_by_id(id: int):
     for user in user_list:
         if user.id == id:
             return user
-    return {"error": "User not found"}
+    raise HTTPException(status_code=404, detail="User not found")
 
 def check_user_exists(id: int):
     if(type(search_user_by_id(id)) == User):
