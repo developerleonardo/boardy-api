@@ -47,6 +47,4 @@ def search_board_by_id(id: str):
             return board
     return None
 def check_board_exists(id: str):
-    if(type(search_board_by_id(id)) == Board):
-        return True
-    return False
+    return search_board_by_id(id) is not None

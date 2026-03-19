@@ -6,11 +6,12 @@ class Card(BaseModel):
     id: int
     name: str
     description: str
+    order: int
 
 card_list = [
-    Card(listId="list1", id=1, name="Task 1", description="This is the first task."),
-    Card(listId="list1", id=2, name="Task 2", description="This is the second task."),
-    Card(listId="list2", id=3, name="Task 3", description="This is the third task."),
+    Card(list_id="list1", id=1, name="Task 1", description="This is the first task.", order=1),
+    Card(list_id="list1", id=2, name="Task 2", description="This is the second task.", order=2),
+    Card(list_id="list2", id=3, name="Task 3", description="This is the third task.", order=1),
 ]
 
 router = APIRouter(prefix="/cards")
@@ -47,6 +48,4 @@ def search_card_by_id(id: str):
             return card
     return None
 def check_card_exists(id: str):
-    if(type(search_card_by_id(id)) == Card):
-        return True
-    return False        
+    return search_card_by_id(id) is not None      

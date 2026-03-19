@@ -57,9 +57,7 @@ def search_user_by_id(id: int):
     return None
 
 def check_user_exists(id: int):
-    if(type(search_user_by_id(id)) == User):
-        return True
-    return False
+    return search_user_by_id(id) is not None
 
 def check_user_exists_by_email(email: str):
     for user in user_list:
